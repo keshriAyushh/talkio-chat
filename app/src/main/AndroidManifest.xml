@@ -7,6 +7,9 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
 
     <application
         android:name=".TalkioApplication"
@@ -19,12 +22,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Talkio"
         tools:targetApi="31" >
-        <activity
-            android:name=".presentation.activities.SplashActivity"
-            android:exported="false" />
-        <activity
-            android:name=".presentation.SplashActivity"
-            android:exported="false" />
         <activity
             android:name=".presentation.activities.MainActivity"
             android:exported="true"

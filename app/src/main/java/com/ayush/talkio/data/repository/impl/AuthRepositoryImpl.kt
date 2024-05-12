@@ -12,6 +12,7 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -25,75 +26,59 @@ class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
     private val rtdb: FirebaseDatabase
 ) : AuthRepository {
-    override fun sendOtp(phone: String, activity: Activity): Flow<Response<String>> = callbackFlow {
-        trySend(Response.None)
-        trySend(Response.Loading)
+    override fun signUp(user: User): Flow<Response<Boolean>> = callbackFlow {
 
-        val callback = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            override fun onVerificationCompleted(p0: PhoneAuthCredential) {}
+        try {
+            trySend(Response.None)
+            trySend(Response.Loading)
 
-            override fun onVerificationFailed(p0: FirebaseException) {
-                trySend(Response.Error(p0.localizedMessage ?: ERR))
-            }
+            auth.createUserWithEmailAndPassword(user.email, user.password)
+                .addOnSuccessListener { task ->
+                    rtdb.getReference(USERS_REF)
+                        .child(task.user?.uid!!)
+                        .setValue(user.copy(userId = task.user?.uid!!, timestamp = System.currentTimeMillis()))
+                        .addOnSuccessListener {
+                            trySend(Response.Success(true))
+                        }
+                        .addOnFailureListener {
+                            trySend(Response.Error(it.message ?: ERR))
+                        }
 
-            override fun onCodeSent(
-                verificationCode: String,
-                p1: PhoneAuthProvider.ForceResendingToken
-            ) {
-                super.onCodeSent(verificationCode, p1)
-                trySend(Response.Success(verificationCode))
-            }
+                }
+                .addOnFailureListener {
+                    trySend(Response.Error(it.message ?: ERR))
+                }
+                .await()
+        } catch (e: Exception) {
+            trySend(Response.Error(e.message ?: ERR))
         }
-
-        val options = PhoneAuthOptions
-            .newBuilder(auth)
-            .setPhoneNumber("+91$phone")
-            .setTimeout(60L, TimeUnit.SECONDS)
-            .setActivity(activity)
-            .setCallbacks(callback)
-            .build()
-
-        PhoneAuthProvider.verifyPhoneNumber(options)
-
         awaitClose {
-            close()
+            this.cancel()
         }
     }
 
-    override fun verifyOtp(
-        phone: String,
-        otp: String,
-        verificationCode: String
-    ): Flow<Response<Boolean>> =
-        callbackFlow {
+    override fun signIn(email: String, password: String): Flow<Response<Boolean>> = callbackFlow {
+        try {
             trySend(Response.None)
             trySend(Response.Loading)
-            val credential = PhoneAuthProvider.getCredential(verificationCode, otp)
-            auth.signInWithCredential(credential)
+
+            auth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
-                    if (rtdb.getReference(USERS_REF).child(it.user?.uid!!).get().result.exists()) {
-                        trySend(Response.Success(true))
-                    } else {
-                        rtdb.getReference(USERS_REF).child(it.user?.uid!!)
-                            .setValue(User(userId = it.user?.uid!!, phone = phone))
-                            .addOnSuccessListener {
-                                trySend(Response.Success(true))
-                            }
-                            .addOnFailureListener { err ->
-                                trySend(Response.Error(err.localizedMessage ?: ERR))
-                            }
-                    }
+                    trySend(Response.Success(true))
                 }
-                .addOnFailureListener {
-                    trySend(Response.Error(it.localizedMessage ?: ERR))
+                .addOnFailureListener { e ->
+                    trySend(Response.Error(e.message ?: ERR))
                 }
                 .await()
 
-            awaitClose {
-                this.close()
-            }
-
+        } catch (e: Exception) {
+            trySend(Response.Error(e.message ?: ERR))
         }
+
+        awaitClose {
+            this.cancel()
+        }
+    }
 
     override fun logout() {
         auth.signOut()

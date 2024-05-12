@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ayush.convoz.presentation.components.MyText
@@ -57,10 +58,12 @@ import com.ayush.talkio.utils.Route
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun LoginScreen(
+fun SignupScreen(
     viewModel: AuthViewModel = hiltViewModel()
 ) {
+
     val snackbarHost = LocalSnackbarState.current
     val scope = rememberCoroutineScope()
     val navigator = LocalAuthNavigator.current
@@ -69,6 +72,9 @@ fun LoginScreen(
         mutableStateOf("")
     }
     val password = rememberSaveable {
+        mutableStateOf("")
+    }
+    val name = rememberSaveable {
         mutableStateOf("")
     }
     val passwordVisible = rememberSaveable {
@@ -118,7 +124,7 @@ fun LoginScreen(
                             Space(height = 10.dp)
 
                             MyText(
-                                text = "Please login to your account!",
+                                text = "Enter your details to get started",
                                 color = Color.Black,
                                 fontSize = 20,
                                 font = R.font.medium,
@@ -135,6 +141,20 @@ fun LoginScreen(
                             Space(height = 20.dp)
 
                             MyTextField(
+                                text = name,
+                                trailingIcon = Icons.Rounded.PersonOutline,
+                                color = Color.Black,
+                                visualTransformation = VisualTransformation.None,
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Text,
+                                    imeAction = ImeAction.Next
+                                ),
+                                placeholder = "Name",
+                            ) { newName -> }
+
+                            Space(height = 10.dp)
+
+                            MyTextField(
                                 text = email,
                                 trailingIcon = Icons.Rounded.PersonOutline,
                                 color = Color.Black,
@@ -144,9 +164,7 @@ fun LoginScreen(
                                     imeAction = ImeAction.Next
                                 ),
                                 placeholder = "Email"
-                            ) { newEmail ->
-
-                            }
+                            ) { newEmail -> }
 
                             Space(height = 10.dp)
 
@@ -175,10 +193,28 @@ fun LoginScreen(
                                             .matches()
                                     ) {
                                         if (password.value.length >= 6) {
-                                            viewModel.signIn(
-                                                email = email.value,
-                                                password = password.value
-                                            )
+                                            if (name.value.isNotEmpty()) {
+                                                viewModel.signUp(
+                                                    User(
+                                                        email = email.value,
+                                                        password = password.value,
+                                                        name = name.value,
+                                                        isOnline = false,
+                                                        lastSeen = -1L,
+                                                        bio = "",
+                                                        pfp = "",
+                                                        fcmToken = "",
+                                                        timestamp = 0L,
+                                                        userId = ""
+                                                    )
+                                                )
+                                            } else {
+                                                Toast.makeText(
+                                                    activity,
+                                                    "Please enter your name",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
                                         } else {
                                             Toast.makeText(
                                                 activity,
@@ -189,9 +225,10 @@ fun LoginScreen(
                                     } else {
                                         Toast.makeText(
                                             activity,
-                                            "Enter a valid email",
+                                            "Invalid Email",
                                             Toast.LENGTH_SHORT
-                                        ).show()
+                                        )
+                                            .show()
                                     }
                                 },
                                 modifier = Modifier.fillMaxWidth(),
@@ -213,7 +250,7 @@ fun LoginScreen(
                                 contentAlignment = Alignment.BottomCenter
                             ) {
                                 MyText(
-                                    text = "Don't have an account? Sign up",
+                                    text = "Already have an account? Sign in",
                                     fontSize = 14,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black,
@@ -228,6 +265,7 @@ fun LoginScreen(
                     }
                 }
             }
+
             is Response.Success -> {
                 if (it.data) {
                     navigator.navigate(Route.CompleteProfileScreen.route)

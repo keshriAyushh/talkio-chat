@@ -3,7 +3,8 @@ package com.ayush.talkio.data.model
 data class User(
     val userId: String = "",
     val name: String = "",
-    val phone: String = "",
+    val email: String = "",
+    val password: String = "",
     val bio: String = "",
     val pfp: String = "",
     @JvmField
@@ -15,7 +16,8 @@ data class User(
     constructor() : this(
         userId = "",
         name = "",
-        phone = "",
+        email = "",
+        password = "",
         bio = "",
         pfp = "",
         fcmToken = "",

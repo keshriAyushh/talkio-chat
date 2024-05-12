@@ -1,15 +1,10 @@
 package com.ayush.talkio.presentation.viewmodels
 
-import android.app.Activity
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ayush.talkio.data.model.User
 import com.ayush.talkio.data.repository.AuthRepository
-import com.ayush.talkio.presentation.events.AuthUiEvent
-import com.ayush.talkio.presentation.rules.Validator
-import com.ayush.talkio.presentation.screens.auth.LoginUiState
 import com.ayush.talkio.utils.Response
-import com.google.rpc.context.AttributeContext.Auth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,47 +15,37 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository
-): ViewModel() {
+) : ViewModel() {
 
-    private var isValidated: Boolean = false
+    private val _signUpEvent = MutableStateFlow<Response<Boolean>>(Response.None)
+    val signUpEvent = _signUpEvent.asStateFlow()
 
-    var verificationCode: String = ""
+    private val _signInEvent = MutableStateFlow<Response<Boolean>>(Response.None)
+    val signInEvent = _signInEvent.asStateFlow()
 
-    val loginUiState = mutableStateOf(LoginUiState())
 
-    private val _sendOtpEvent = MutableStateFlow<Response<String>>(Response.None)
-    val sendOtpEvent = _sendOtpEvent.asStateFlow()
-
-    fun onEvent(event: AuthUiEvent) {
-        when(event) {
-            is AuthUiEvent.OnPhoneChanged -> {
-                loginUiState.value = loginUiState.value.copy(
-                    phone = event.phone
-                )
-                validateResult()
-            }
-            is AuthUiEvent.OnSendOtpClicked -> {
-                if(isValidated) {
-                    sendOtp(loginUiState.value.phone, activity = loginUiState.value.activity)
-                }
-            }
-        }
-    }
-
-    private fun sendOtp(phone: String, activity: Activity) {
+    fun signUp(user: User) {
         viewModelScope.launch {
-            authRepository.sendOtp(phone = phone, activity = activity)
+            authRepository.signUp(user = user)
                 .collect {
-                    _sendOtpEvent.value = it
+                    _signUpEvent.value = it
                 }
         }
     }
 
-    private fun validateResult() {
-        loginUiState.value = loginUiState.value.copy(
-            phoneError = Validator.validatePhone(loginUiState.value.phone).status
-        )
-
-        isValidated = Validator.validatePhone(loginUiState.value.phone).status
+    fun signIn(email: String, password: String) {
+        viewModelScope.launch {
+            authRepository.signIn(email, password)
+                .collect {
+                    _signInEvent.value = it
+                }
+        }
     }
+
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.logout()
+        }
+    }
+
 }

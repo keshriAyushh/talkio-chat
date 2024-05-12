@@ -29,9 +29,10 @@ fun MyTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    error: Boolean = true,
+    error: Boolean? = null,
     prefix: (@Composable () -> Unit)? = null,
-    onValueChange: (String) -> Unit
+    maxLines: Int = 1,
+    onValueChange: (String) -> Unit,
 ) {
     OutlinedTextField(
         value = text.value,
@@ -66,16 +67,17 @@ fun MyTextField(
             }
         },
         supportingText = {
-            if (!error && placeholder == "Password") {
-                MyText(
-                    text = "* Password must be at least 6 characters long",
-                    fontSize = 12,
-                    font = R.font.bold,
-                    color = Color.Red
-                )
+            error?.let { error ->
+                if (!error && placeholder == "Password") {
+                    MyText(
+                        text = "* Password must be at least 6 characters long",
+                        fontSize = 12,
+                        font = R.font.bold,
+                        color = Color.Red
+                    )
+                }
             }
         },
-
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
@@ -98,7 +100,7 @@ fun MyTextField(
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier),
-        isError = !error,
-        maxLines = 1
+        isError = error?.let { !error } ?: false,
+        maxLines = maxLines
     )
 }

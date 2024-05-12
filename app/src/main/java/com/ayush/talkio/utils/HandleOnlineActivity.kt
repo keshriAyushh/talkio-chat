@@ -9,8 +9,8 @@ import javax.inject.Inject
 
 class HandleOnlineActivity {
 
-    @Inject
-    lateinit var rtdb: FirebaseDatabase
+
+    private val rtdb: FirebaseDatabase = FirebaseDatabase.getInstance()
 
     fun setOnline(userId: String) {
         CoroutineScope(Dispatchers.IO).launch {

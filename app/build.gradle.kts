@@ -102,11 +102,17 @@ dependencies {
     //Gson
     implementation("com.google.code.gson:gson:2.10.1")
 
-
+    //Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
     implementation("com.google.firebase:firebase-storage-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-database")
 
+    //Lottie
+    implementation("com.airbnb.android:lottie-compose:6.0.1")
+
+    implementation("androidx.activity:activity-compose:1.9.0")
+
+    implementation("io.coil-kt:coil-compose:2.4.0")
 }

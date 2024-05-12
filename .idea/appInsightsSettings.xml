@@ -9,9 +9,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.ayush.talkio" />
-                  <option name="mobileSdkAppId" value="1:93156030373:android:777e5737f5fb1d9e19da4c" />
-                  <option name="projectId" value="convoz-92266" />
-                  <option name="projectNumber" value="93156030373" />
+                  <option name="mobileSdkAppId" value="1:176219451877:android:97a888a2103b2359acbf0c" />
+                  <option name="projectId" value="chat-1d01c" />
+                  <option name="projectNumber" value="176219451877" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

@@ -1,32 +1,14 @@
 {
   "project_info": {
-    "project_number": "93156030373",
-    "project_id": "convoz-92266",
-    "storage_bucket": "convoz-92266.appspot.com"
+    "project_number": "176219451877",
+    "firebase_url": "https://chat-1d01c-default-rtdb.firebaseio.com",
+    "project_id": "chat-1d01c",
+    "storage_bucket": "chat-1d01c.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:93156030373:android:88bb4d67f634911819da4c",
-        "android_client_info": {
-          "package_name": "com.ayush.convoz"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDQkSu5-SGNods7AK7KiM1XI9bufHkbDh0"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:93156030373:android:777e5737f5fb1d9e19da4c",
+        "mobilesdk_app_id": "1:176219451877:android:97a888a2103b2359acbf0c",
         "android_client_info": {
           "package_name": "com.ayush.talkio"
         }
@@ -34,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDQkSu5-SGNods7AK7KiM1XI9bufHkbDh0"
+          "current_key": "AIzaSyDLCbCgAwFxLexEZHZfyU4McOvW8cyJTh0"
         }
       ],
       "services": {
