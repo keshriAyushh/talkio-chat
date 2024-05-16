@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -63,10 +63,21 @@ import kotlinx.coroutines.launch
 fun SignupScreen(
     viewModel: AuthViewModel = hiltViewModel()
 ) {
+    val navigator = LocalAuthNavigator.current
+
+    LaunchedEffect(key1 = Unit) {
+        if (viewModel.isLoggedIn()) {
+            navigator.navigate(Route.MainScreen.route) {
+                popUpTo(Route.MainScreen.route) {
+                    inclusive = true
+                }
+            }
+        }
+    }
 
     val snackbarHost = LocalSnackbarState.current
     val scope = rememberCoroutineScope()
-    val navigator = LocalAuthNavigator.current
+
     val activity = LocalActivity.current
     val email = rememberSaveable {
         mutableStateOf("")
@@ -112,17 +123,13 @@ fun SignupScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         item {
-
-
                             MyText(
                                 text = "Talkio",
                                 fontSize = 25,
                                 color = Color.Black,
                                 font = R.font.bold
                             )
-
                             Space(height = 10.dp)
-
                             MyText(
                                 text = "Enter your details to get started",
                                 color = Color.Black,
@@ -152,8 +159,6 @@ fun SignupScreen(
                                 placeholder = "Name",
                             ) { newName -> }
 
-                            Space(height = 10.dp)
-
                             MyTextField(
                                 text = email,
                                 trailingIcon = Icons.Rounded.PersonOutline,
@@ -165,8 +170,6 @@ fun SignupScreen(
                                 ),
                                 placeholder = "Email"
                             ) { newEmail -> }
-
-                            Space(height = 10.dp)
 
                             MyTextField(
                                 text = password,
@@ -185,7 +188,7 @@ fun SignupScreen(
 
                             }
 
-                            Space(height = 30.dp)
+                            Space(height = 10.dp)
 
                             Button(
                                 onClick = {
@@ -243,6 +246,7 @@ fun SignupScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                             }
+                            Space(height = 50.dp)
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()

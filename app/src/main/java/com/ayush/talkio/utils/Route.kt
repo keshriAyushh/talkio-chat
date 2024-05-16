@@ -5,6 +5,7 @@ sealed class Route(val route: String) {
 
     data object AUTH: Route("auth")
     data object MAIN: Route("main")
+    data object APP : Route("app")
 
     data object SplashScreen: Route("splash")
     data object OnboardingScreen: Route("onboarding")
@@ -16,5 +17,6 @@ sealed class Route(val route: String) {
     data object ChatScreen: Route("chat")
     data object AllChatsScreen: Route("all_chats")
     data object ProfileScreen: Route("profile")
+
 
 }

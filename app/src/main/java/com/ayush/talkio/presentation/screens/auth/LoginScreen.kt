@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -42,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ayush.convoz.presentation.components.MyText
 import com.ayush.talkio.R
-import com.ayush.talkio.data.model.User
 import com.ayush.talkio.presentation.components.Loading
 import com.ayush.talkio.presentation.components.MyTextField
 import com.ayush.talkio.presentation.components.Space
@@ -75,7 +73,7 @@ fun LoginScreen(
         mutableStateOf(false)
     }
 
-    viewModel.signUpEvent.collectAsState().value.let {
+    viewModel.signInEvent.collectAsState().value.let {
         when (it) {
             is Response.Error -> {
                 scope.launch {
@@ -106,7 +104,6 @@ fun LoginScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         item {
-
 
                             MyText(
                                 text = "Talkio",
@@ -148,8 +145,6 @@ fun LoginScreen(
 
                             }
 
-                            Space(height = 10.dp)
-
                             MyTextField(
                                 text = password,
                                 trailingIcon = if (passwordVisible.value) Icons.Rounded.Visibility else Icons.Rounded.VisibilityOff,
@@ -167,7 +162,7 @@ fun LoginScreen(
 
                             }
 
-                            Space(height = 30.dp)
+                            Space(height = 10.dp)
 
                             Button(
                                 onClick = {
@@ -202,13 +197,13 @@ fun LoginScreen(
                                 )
                             ) {
                                 MyText(
-                                    text = "Create Account",
+                                    text = "Log in",
                                     fontWeight = FontWeight.Bold
                                 )
                             }
+                            Space(height = 50.dp)
                             Box(
                                 modifier = Modifier
-                                    .fillMaxSize()
                                     .background(Color.Transparent),
                                 contentAlignment = Alignment.BottomCenter
                             ) {
@@ -220,7 +215,7 @@ fun LoginScreen(
                                     font = R.font.medium,
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier.clickable {
-                                        navigator.navigate(Route.LoginScreen.route)
+                                        navigator.navigate(Route.SignupScreen.route)
                                     }
                                 )
                             }
@@ -230,7 +225,7 @@ fun LoginScreen(
             }
             is Response.Success -> {
                 if (it.data) {
-                    navigator.navigate(Route.CompleteProfileScreen.route)
+                    navigator.navigate(Route.MainScreen.route)
                 } else {
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }

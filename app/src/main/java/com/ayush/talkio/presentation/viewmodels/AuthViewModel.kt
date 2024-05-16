@@ -42,6 +42,9 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun isLoggedIn() = authRepository.isLoggedIn()
+
+
     fun logout() {
         viewModelScope.launch {
             authRepository.logout()

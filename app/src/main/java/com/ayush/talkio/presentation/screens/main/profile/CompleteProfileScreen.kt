@@ -1,5 +1,6 @@
 package com.ayush.talkio.presentation.screens.main.profile
 
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -27,7 +28,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -73,6 +73,7 @@ fun CompleteProfileScreen(
         mutableStateOf("")
     }
     val navigator = LocalAuthNavigator.current
+    val context = LocalContext.current
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -83,11 +84,22 @@ fun CompleteProfileScreen(
         }
     )
 
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            galleryLauncher.launch("image/*")
+        } else {
+            Toast.makeText(context, "Gallery permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     viewModel.completeProfileEvent.collectAsState().value.let {
-        when(it) {
+        when (it) {
             is Response.Error -> {
                 Toast.makeText(LocalContext.current, it.error, Toast.LENGTH_SHORT).show()
             }
+
             Response.Loading -> Loading()
             Response.None -> {
                 Column(
@@ -148,7 +160,7 @@ fun CompleteProfileScreen(
 
                         Card(
                             modifier = Modifier
-                                .background(Surface)
+                                .background(Color.Transparent)
                                 .align(Alignment.CenterHorizontally),
                             elevation = CardDefaults.cardElevation(
                                 defaultElevation = 4.dp
@@ -166,7 +178,7 @@ fun CompleteProfileScreen(
                     } else {
                         Card(
                             modifier = Modifier
-                                .background(Surface)
+                                .background(Color.Transparent)
                                 .align(Alignment.CenterHorizontally),
                             elevation = CardDefaults.cardElevation(
                                 defaultElevation = 4.dp
@@ -182,7 +194,14 @@ fun CompleteProfileScreen(
                         }
                     }
                     Button(
-                        onClick = { galleryLauncher.launch("image/*") },
+                        onClick = {
+                            if (context.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                                galleryLauncher.launch("image/*")
+                            } else {
+                                // Request the gallery permission using the launcher
+                                requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                            }
+                        },
                         modifier = Modifier
                             .padding(top = 10.dp)
                             .align(Alignment.CenterHorizontally),
@@ -226,10 +245,11 @@ fun CompleteProfileScreen(
                     }
                 }
             }
+
             is Response.Success -> {
-                if(it.data) {
-                    navigator.navigate(Route.MAIN.route) {
-                        popUpTo(Route.MAIN.route) {
+                if (it.data) {
+                    navigator.navigate(Route.MainScreen.route) {
+                        popUpTo(Route.MainScreen.route) {
                             inclusive = true
                         }
                     }

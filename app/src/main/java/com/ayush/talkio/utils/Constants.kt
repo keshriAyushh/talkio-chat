@@ -4,7 +4,8 @@ object Constants {
 
     const val COMPRESSION_QUALITY: Int = 50
     const val USERS_REF = "users"
-    const val CHATROOM_COLLECTION = "chatrooms"
+    const val CHATS_COLLECTION = "chats"
+    const val REQUESTS_COLLECTION = "requests"
     const val ERR = "An unknown error has occurred."
 
     val permissions = arrayOf(

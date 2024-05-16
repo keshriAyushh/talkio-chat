@@ -1,23 +1,17 @@
 package com.ayush.talkio.data.repository.impl
 
-import android.app.Activity
 import com.ayush.talkio.data.model.User
 import com.ayush.talkio.data.repository.AuthRepository
 import com.ayush.talkio.utils.Constants.ERR
 import com.ayush.talkio.utils.Constants.USERS_REF
 import com.ayush.talkio.utils.Response
-import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthOptions
-import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -79,6 +73,10 @@ class AuthRepositoryImpl @Inject constructor(
             this.cancel()
         }
     }
+
+    override fun isLoggedIn() = auth.currentUser != null
+
+    override fun getCurrentUserId() = auth.currentUser?.uid!!
 
     override fun logout() {
         auth.signOut()

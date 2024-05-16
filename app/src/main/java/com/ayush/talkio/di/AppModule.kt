@@ -1,10 +1,14 @@
 package com.ayush.talkio.di
 
 import android.content.Context
+import com.ayush.talkio.data.repository.AllChatsRepository
 import com.ayush.talkio.data.repository.AuthRepository
 import com.ayush.talkio.data.repository.ProfileRepository
+import com.ayush.talkio.data.repository.RequestsRepository
+import com.ayush.talkio.data.repository.impl.AllChatsRepositoryImpl
 import com.ayush.talkio.data.repository.impl.AuthRepositoryImpl
 import com.ayush.talkio.data.repository.impl.ProfileRepositoryImpl
+import com.ayush.talkio.data.repository.impl.RequestsRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
@@ -56,5 +60,31 @@ object AppModule {
         rtdb = rtdb,
         storage = storage,
         context = context
+    )
+
+    @Provides
+    fun providesAllChatsRepository(
+        auth: FirebaseAuth,
+        db: FirebaseFirestore,
+        rtdb: FirebaseDatabase,
+        storage: FirebaseStorage
+    ): AllChatsRepository = AllChatsRepositoryImpl(
+        auth = auth,
+        db = db,
+        rtdb = rtdb,
+        storage = storage
+    )
+
+    @Provides
+    fun providesRequestRepository(
+        auth: FirebaseAuth,
+        db: FirebaseFirestore,
+        rtdb: FirebaseDatabase,
+        storage: FirebaseStorage
+    ): RequestsRepository = RequestsRepositoryImpl(
+        auth = auth,
+        db = db,
+        rtdb = rtdb,
+        storage = storage
     )
 }
