@@ -9,6 +9,7 @@ import com.ayush.talkio.utils.Constants.CHATS_COLLECTION
 import com.ayush.talkio.utils.Constants.ERR
 import com.ayush.talkio.utils.Constants.REQUESTS_COLLECTION
 import com.ayush.talkio.utils.Constants.USERS_REF
+import com.ayush.talkio.utils.NotificationHandler
 import com.ayush.talkio.utils.Response
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -78,6 +79,7 @@ class AllChatsRepositoryImpl @Inject constructor(
                         val ss = it.result
                         if (!ss.exists()) {
                             trySend(Response.Error("The user with userId: $to does not exist"))
+                            trySend(Response.None)
                         } else {
                             //If user id exists, check if the request is already sent or not
                             db.collection(REQUESTS_COLLECTION)
@@ -88,6 +90,7 @@ class AllChatsRepositoryImpl @Inject constructor(
                                 .addOnSuccessListener { task ->
                                     if (!task.isEmpty) {
                                         trySend(Response.Error("Request already sent, please wait for its approval"))
+                                        trySend(Response.None)
                                     } else {
                                         //Request is not sent, therefore, create one
                                         rtdb.getReference(USERS_REF)
@@ -110,7 +113,11 @@ class AllChatsRepositoryImpl @Inject constructor(
                                                             .document(taskSnap.id)
                                                             .set(chatReq.copy(requestId = taskSnap.id))
                                                             .addOnSuccessListener {
+                                                                NotificationHandler.sendChatRequestNotification(
+                                                                    request = chatReq
+                                                                )
                                                                 trySend(Response.Success(true))
+                                                                trySend(Response.None)
                                                             }
                                                             .addOnFailureListener { fail ->
                                                                 trySend(

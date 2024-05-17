@@ -117,4 +117,8 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.9.0")
 
     implementation("io.coil-kt:coil-compose:2.4.0")
+
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
+
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
 }

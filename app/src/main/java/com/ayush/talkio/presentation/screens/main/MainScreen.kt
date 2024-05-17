@@ -12,6 +12,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -25,7 +28,6 @@ import com.ayush.talkio.navigation.BottomNavGraph
 import com.ayush.talkio.presentation.ui.theme.Cyan
 import com.ayush.talkio.presentation.ui.theme.Surface
 import com.ayush.talkio.utils.BtmRoute
-import com.ayush.talkio.utils.LocalActivity
 import com.ayush.talkio.utils.LocalAuthNavigator
 import com.ayush.talkio.utils.LocalSnackbarState
 
@@ -36,11 +38,39 @@ fun MainScreen() {
     val authNavController = LocalAuthNavigator.current
     val snackbarHostState = LocalSnackbarState.current
 
-    val activity = LocalActivity.current
+
+    val navBackStackEntry by appNavController.currentBackStackEntryAsState()
+    var bottomBarState by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    when (navBackStackEntry?.destination?.route) {
+        BtmRoute.AllChats.route -> {
+            bottomBarState = true
+        }
+
+        BtmRoute.Stories.route -> {
+            bottomBarState = true
+        }
+
+        BtmRoute.Profile.route -> {
+            bottomBarState = true
+        }
+
+        BtmRoute.Requests.route -> {
+            bottomBarState = true
+        }
+
+        BtmRoute.Chat.route -> {
+            bottomBarState = false
+        }
+    }
 
     Scaffold(
         bottomBar = {
-            BottomBar(appNavController)
+            if (bottomBarState) {
+                BottomBar(appNavController)
+            }
         },
         snackbarHost = {
             SnackbarHost(
@@ -60,8 +90,8 @@ fun BottomBar(navController: NavController) {
     val screens = listOf(
         BtmRoute.AllChats,
         BtmRoute.Stories,
-        BtmRoute.Profile,
-        BtmRoute.Requests
+        BtmRoute.Requests,
+        BtmRoute.Profile
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -70,8 +100,7 @@ fun BottomBar(navController: NavController) {
     NavigationBar(
         containerColor = Surface,
         contentColor = Color.Black,
-
-        ) {
+    ) {
         screens.forEach { screen ->
             AddItem(
                 screen = screen,

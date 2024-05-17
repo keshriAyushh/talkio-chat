@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.ayush.talkio.presentation.screens.main.RequestsScreen
 import com.ayush.talkio.presentation.screens.main.chats.AllChatsScreen
+import com.ayush.talkio.presentation.screens.main.chats.ChatScreen
 import com.ayush.talkio.presentation.screens.main.profile.ProfileScreen
 import com.ayush.talkio.presentation.screens.main.story.StoryScreen
 import com.ayush.talkio.utils.BtmRoute
@@ -41,6 +42,9 @@ fun BottomNavGraph(
             }
             composable(route = BtmRoute.Requests.route) {
                 RequestsScreen()
+            }
+            composable("${BtmRoute.Chat.route}/{userId}") { backStackEntry ->
+                ChatScreen(receiverId = backStackEntry.arguments?.getString("userId")!!)
             }
         }
     }

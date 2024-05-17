@@ -15,5 +15,6 @@ sealed class BtmRoute(
     data object Profile : BtmRoute("profile", Icons.Filled.Chat, "Profile")
     data object Stories : BtmRoute("story", Icons.Filled.Storm, "Stories")
     data object Requests : BtmRoute("request", Icons.Filled.Notifications, "Requests")
+    data object Chat : BtmRoute("chat", Icons.Filled.Chat, "Chat")
 
 }

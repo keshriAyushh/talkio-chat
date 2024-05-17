@@ -3,15 +3,20 @@ package com.ayush.talkio.di
 import android.content.Context
 import com.ayush.talkio.data.repository.AllChatsRepository
 import com.ayush.talkio.data.repository.AuthRepository
+import com.ayush.talkio.data.repository.ChatRepository
+import com.ayush.talkio.data.repository.FCMRepository
 import com.ayush.talkio.data.repository.ProfileRepository
 import com.ayush.talkio.data.repository.RequestsRepository
 import com.ayush.talkio.data.repository.impl.AllChatsRepositoryImpl
 import com.ayush.talkio.data.repository.impl.AuthRepositoryImpl
+import com.ayush.talkio.data.repository.impl.ChatRepositoryImpl
+import com.ayush.talkio.data.repository.impl.FCMRepositoryImpl
 import com.ayush.talkio.data.repository.impl.ProfileRepositoryImpl
 import com.ayush.talkio.data.repository.impl.RequestsRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
@@ -39,6 +44,10 @@ object AppModule {
     @Provides
     @Singleton
     fun providesStorage() = FirebaseStorage.getInstance()
+
+    @Provides
+    @Singleton
+    fun providesMessaging() = FirebaseMessaging.getInstance()
 
     @Provides
     fun provideAuthRepository(
@@ -86,5 +95,29 @@ object AppModule {
         db = db,
         rtdb = rtdb,
         storage = storage
+    )
+
+    @Provides
+    fun providesFCMRepository(
+        auth: FirebaseAuth,
+        messaging: FirebaseMessaging,
+        rtdb: FirebaseDatabase
+    ): FCMRepository = FCMRepositoryImpl(
+        auth = auth,
+        messaging = messaging,
+        rtdb = rtdb
+    )
+
+    @Provides
+    fun providesChatRepository(
+        db: FirebaseFirestore,
+        rtdb: FirebaseDatabase,
+        messaging: FirebaseMessaging,
+        auth: FirebaseAuth
+    ): ChatRepository = ChatRepositoryImpl(
+        db = db,
+        rtdb = rtdb,
+        messaging = messaging,
+        auth = auth
     )
 }

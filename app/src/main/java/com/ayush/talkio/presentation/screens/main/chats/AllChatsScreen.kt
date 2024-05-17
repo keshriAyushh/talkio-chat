@@ -33,12 +33,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ayush.convoz.presentation.components.MyText
 import com.ayush.talkio.R
+import com.ayush.talkio.data.model.Chat
 import com.ayush.talkio.presentation.components.ChatItem
 import com.ayush.talkio.presentation.components.DialogScreen
 import com.ayush.talkio.presentation.components.Loading
 import com.ayush.talkio.presentation.components.Space
 import com.ayush.talkio.presentation.ui.theme.Surface
 import com.ayush.talkio.presentation.viewmodels.AllChatScreenViewModel
+import com.ayush.talkio.utils.BtmRoute
+import com.ayush.talkio.utils.LocalAppNavigator
 import com.ayush.talkio.utils.LocalSnackbarState
 import com.ayush.talkio.utils.Response
 import kotlinx.coroutines.launch
@@ -48,7 +51,7 @@ fun AllChatsScreen(
     viewModel: AllChatScreenViewModel = hiltViewModel()
 ) {
 
-//    val ctx = LocalContext.current
+    val navigator = LocalAppNavigator.current
 
     val showDialog = rememberSaveable {
         mutableStateOf(false)
@@ -60,6 +63,7 @@ fun AllChatsScreen(
 
     LaunchedEffect(key1 = Unit) {
         viewModel.getAllChats()
+        viewModel.getFCMToken()
         userId.value = viewModel.getCurrentUserId()
     }
 
@@ -196,7 +200,8 @@ fun AllChatsScreen(
                     is Response.Success -> {
                         LazyColumn(
                             modifier = Modifier
-                                .padding(horizontal = 10.dp),
+                                .padding(horizontal = 10.dp)
+                                .weight(1f),
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.Start
                         ) {
@@ -204,7 +209,14 @@ fun AllChatsScreen(
                                 ChatItem(
                                     userId = userId.value,
                                     chatItem
-                                )
+                                ) { chat: Chat ->
+                                    if (userId.value == chat.senderId) {
+                                        //Current user is the sender, hence open the receivers chat
+                                        navigator.navigate("${BtmRoute.Chat.route}/${chat.receiverId}")
+                                    } else {
+                                        navigator.navigate("${BtmRoute.Chat.route}/${chat.senderId}")
+                                    }
+                                }
                                 Space(height = 4.dp)
                             }
                         }

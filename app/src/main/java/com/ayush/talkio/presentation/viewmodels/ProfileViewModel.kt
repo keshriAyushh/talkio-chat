@@ -31,6 +31,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+
     fun logout() {
         authRepository.logout()
     }

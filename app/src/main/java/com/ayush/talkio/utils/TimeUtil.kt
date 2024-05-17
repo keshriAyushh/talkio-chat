@@ -1,5 +1,8 @@
 package com.ayush.talkio.utils
 
+import java.util.Calendar
+import java.util.Locale
+
 class TimeUtil {
 
     companion object {
@@ -32,6 +35,16 @@ class TimeUtil {
             } else {
                 (diff / DAY_MILLS).toString() + " days ago"
             }
+        }
+
+        fun getShortDate(ts: Long?): String {
+            if (ts == null) return ""
+            //Get instance of calendar
+            val calendar = Calendar.getInstance(Locale.getDefault())
+            //get current date from ts
+            calendar.timeInMillis = ts
+            //return formatted date
+            return android.text.format.DateFormat.format("E, dd MMM yyyy", calendar).toString()
         }
 
     }

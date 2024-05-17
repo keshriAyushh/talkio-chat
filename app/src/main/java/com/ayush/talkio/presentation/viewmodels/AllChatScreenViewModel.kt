@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.ayush.talkio.data.model.Chat
 import com.ayush.talkio.data.repository.AllChatsRepository
 import com.ayush.talkio.data.repository.AuthRepository
+import com.ayush.talkio.data.repository.FCMRepository
 import com.ayush.talkio.utils.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AllChatScreenViewModel @Inject constructor(
     private val allChatsRepository: AllChatsRepository,
+    private val fcmRepository: FCMRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
@@ -31,6 +33,14 @@ class AllChatScreenViewModel @Inject constructor(
                     _allChatsEvent.value = it
                 }
         }
+    }
+
+    fun getFCMToken() {
+        fcmRepository.getFCMToken()
+    }
+
+    fun deleteFCMToken() {
+        fcmRepository.deleteFCMToken()
     }
 
     fun sendChatRequest(to: String) {

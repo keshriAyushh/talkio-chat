@@ -1,6 +1,7 @@
 package com.ayush.talkio.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -26,7 +28,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -38,7 +39,6 @@ import com.ayush.talkio.presentation.ui.theme.Cyan
 import com.ayush.talkio.utils.TimeUtil
 import com.ayush.talkio.utils.getOtherUserId
 
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ChatItem(
     userId: String = "",
@@ -57,14 +57,18 @@ fun ChatItem(
         receiverId = "",
         receiverName = "",
         receiverPfp = ""
-    )
+    ),
+    onChatItemClick: (Chat) -> Unit
 ) {
     //userId is the id of the currently logged in user, otherUserId is the id of the other user
     val otherUserId = getOtherUserId(chat.members, userId)
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight(),
+            .wrapContentHeight()
+            .clickable {
+                onChatItemClick(chat)
+            },
         elevation = CardDefaults.cardElevation(
             defaultElevation = 4.dp
         )
@@ -79,72 +83,77 @@ fun ChatItem(
         ) {
             if (chat.receiverId == userId) {
                 //The receiver is the current user
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(chat.senderPfp)
-                        .crossfade(true)
-                        .build(),
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(50.dp),
-                    contentDescription = null
-                )
-                Space(width = 10.dp)
-                Column {
-                    MyText(
-                        text = chat.senderName,
-                        color = Color.Black,
-                        fontSize = 16,
-                        fontWeight = FontWeight.Bold,
-                        font = R.font.bold
+                if (chat.senderPfp.isNotEmpty()) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(chat.senderPfp)
+                            .crossfade(true)
+                            .build(),
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(50.dp),
+                        contentDescription = null
                     )
-                    Space(height = 2.dp)
+                } else {
+                    Icon(
+                        imageVector = Icons.Filled.Person,
+                        contentDescription = "Person",
+                        tint = Color.Black
+                    )
                 }
+
             } else {
                 //The sender is the current user
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(chat.receiverPfp)
-                        .crossfade(true)
-                        .build(),
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(50.dp),
-                    contentDescription = null
-                )
-                Space(width = 10.dp)
-                Column {
-                    MyText(
-                        text = chat.receiverName,
-                        color = Color.Black,
-                        fontSize = 16,
-                        fontWeight = FontWeight.Bold,
-                        font = R.font.bold
+                if (chat.receiverPfp.isNotEmpty()) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(chat.receiverPfp)
+                            .crossfade(true)
+                            .build(),
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(50.dp),
+                        contentDescription = null
                     )
-                    Space(height = 2.dp)
-                }
-            }
-            Row {
-                if (chat.lastMessageSenderId == userId) {
+                } else {
                     Icon(
-                        imageVector = Icons.Filled.Check,
-                        contentDescription = "seen_or_not",
-                        tint = if (chat.lastMessageSeen) Cyan else Color.Gray
+                        imageVector = Icons.Filled.Person,
+                        contentDescription = "Person",
+                        tint = Color.Black
                     )
                 }
-                Space(
-                    width = 2.dp
-                )
-                Text(
-                    text = chat.lastMessage,
-                    color = Color.Black,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    fontFamily = FontFamily(Font(R.font.regular)),
-                    overflow = TextOverflow.Ellipsis
-                )
             }
-
+            Space(width = 10.dp)
+            Column {
+                MyText(
+                    text = if (userId == chat.receiverId) chat.senderName else chat.receiverName,
+                    color = Color.Black,
+                    fontSize = 16,
+                    fontWeight = FontWeight.Bold,
+                    font = R.font.bold
+                )
+                Space(height = 2.dp)
+                Row {
+                    if (chat.lastMessageSenderId == userId) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = "seen_or_not",
+                            tint = if (chat.lastMessageSeen) Cyan else Color.Gray
+                        )
+                    }
+                    Space(
+                        width = 2.dp
+                    )
+                    Text(
+                        text = chat.lastMessage,
+                        color = Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        fontFamily = FontFamily(Font(R.font.regular)),
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
             Spacer(modifier = Modifier.weight(1f))
             MyText(
                 text = TimeUtil.getTimeAgo(chat.lastMessageTime)!!,
